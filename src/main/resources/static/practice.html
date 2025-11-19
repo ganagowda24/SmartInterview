@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practice Interview - Interview Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    /* ===== Animated Background with Image ===== */
+    body {
+      background: url('/practice.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      position: relative;
+      opacity: 0;
+      animation: fadeIn 1.2s ease-in-out forwards;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,0,50,0.5), rgba(50,0,100,0.5));
+      animation: gradientMove 10s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    @keyframes gradientMove {
+      0% { background: linear-gradient(135deg, rgba(0,0,50,0.5), rgba(50,0,100,0.5)); }
+      100% { background: linear-gradient(135deg, rgba(0,50,100,0.5), rgba(100,0,150,0.5)); }
+    }
+
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    .practice-container {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 50px auto;
+      animation: floatUpDown 6s ease-in-out infinite;
+    }
+
+    @keyframes floatUpDown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .question-card {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .question-number {
+      background: #667eea;
+      color: white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .timer {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffd700;
+    }
+
+    #answerInput {
+      min-height: 150px;
+      resize: vertical;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, #667eea, #00c6ff);
+      border: none;
+      transition: all 0.4s ease;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 198, 255, 0.6);
+    }
+
+    .btn-outline-light {
+      color: #fff;
+      border-color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    .btn-outline-light:hover {
+      background: rgba(255,255,255,0.15);
+      transform: scale(1.05);
+    }
+
+    .error-message {
+      background: rgba(255, 243, 205, 0.9);
+      border: 1px solid #ffc107;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      color: #000;
+    }
+
+    /* ===== Review Screen Styling ===== */
+    .score-badge {
+      font-size: 70px;
+      font-weight: bold;
+      color: #00c6ff;
+      text-shadow: 0 0 25px rgba(0,198,255,0.6);
+      animation: pulse 2s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.9; }
+      100% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .strength { color: #28a745; }
+    .weakness { color: #ff6b6b; }
+
+    @media (max-width: 768px) {
+      .question-card { padding: 25px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="practice-container">
+    <!-- ===== Setup Screen ===== -->
+    <div id="setupScreen" class="question-card">
+      <h2 class="text-center mb-4 text-info">🎯 Start Interview Practice</h2>
+
+      <div id="loginWarning" class="error-message" style="display:none;">
+        <strong>⚠️ Not Logged In</strong>
+        <p>You need to login to save your progress. <a href="login.html">Click here to login</a></p>
+        <p>Or continue without login (progress won't be saved)</p>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label text-light">Select Interview Type</label>
+        <select class="form-control" id="sessionType">
+          <option value="Quick">Quick Practice (5 questions)</option>
+          <option value="FullMock">Full Mock Interview (15 questions)</option>
+          <option value="Custom">Custom Practice (10 questions)</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label text-light">Select Category</label>
+        <select class="form-control" id="category">
+          <option value="">All Categories (Mixed)</option>
+          <option value="Technical">Technical</option>
+          <option value="HR">HR</option>
+          <option value="Behavioral">Behavioral</option>
+        </select>
+      </div>
+
+      <button onclick="startInterview()" class="btn btn-primary btn-lg w-100" id="startBtn">🚀 Start Interview</button>
+      <a href="dashboard.html" class="btn btn-outline-light w-100 mt-2">← Back to Dashboard</a>
+
+      <div id="errorMessage" class="alert alert-danger mt-3" style="display:none;"></div>
+      <div id="loadingMessage" class="alert alert-info mt-3" style="display:none;">Loading questions... Please wait.</div>
+    </div>
+
+    <!-- ===== Question Screen ===== -->
+    <div id="questionScreen" class="question-card" style="display:none;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="question-number" id="questionNumber">1</div>
+        <div class="timer" id="timer">⏱️ 00:00</div>
+      </div>
+      <h4 id="questionText" class="mb-4"></h4>
+      <textarea id="answerInput" class="form-control mb-3" placeholder="Type your answer here..."></textarea>
+      <button class="btn btn-primary w-100" onclick="nextQuestion()">Next Question →</button>
+    </div>
+
+    <!-- ===== Review Summary Screen ===== -->
+    <div id="reviewScreen" class="question-card text-center" style="display:none;">
+      <h2 class="text-info mb-3">🎯 Practice Summary</h2>
+      <div class="score-badge" id="scoreBadge">85%</div>
+      <p class="lead mt-3" id="reviewMessage">Great effort! You’ve improved your timing and focus.</p>
+
+      <div class="feedback-card mt-4">
+        <h5 class="strength">✅ Strength:</h5>
+        <p id="strengthMsg">Strong consistency in answering HR questions.</p>
+        <h5 class="weakness mt-3">⚠️ Improvement Area:</h5>
+        <p id="weaknessMsg">Try to use more keywords in technical answers.</p>
+      </div>
+
+      <div class="mt-4">
+        <button class="btn btn-primary me-2" onclick="retryPractice()">🔁 Retry Practice</button>
+        <a href="dashboard.html" class="btn btn-outline-light">← Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let token = localStorage.getItem('token');
+    let questions = [];
+    let currentIndex = 0;
+    let timerInterval;
+    let secondsElapsed = 0;
+    let currentSession = null;
+    let currentQuestion = null;
+    let lastFeedback = null;
+
+    async function startInterview() {
+      document.getElementById("errorMessage").style.display = "none";
+      document.getElementById("loadingMessage").style.display = "block";
+
+      const type = document.getElementById("sessionType").value;
+      const category = document.getElementById("category").value;
+      const count = type === "FullMock" ? 15 : type === "Custom" ? 10 : 5;
+
+      try {
+        // 1) Create interview session if logged in
+        if (token) {
+          const startRes = await fetch(`/api/interview/start?sessionType=${encodeURIComponent(type)}&category=${encodeURIComponent(category || "")}`,
+            { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } });
+          if (startRes.ok) {
+            const startJson = await startRes.json();
+            if (startJson.success) currentSession = startJson.data;
+          }
+        } else {
+          // Show login warning if not logged in
+          document.getElementById('loginWarning').style.display = 'block';
+        }
+
+        // 2) Load questions
+        const url = `/api/questions/random?count=${count}&category=${category || ""}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Failed to load questions");
+        const apiRes = await response.json();
+        if (!apiRes.success || !apiRes.data || apiRes.data.length === 0)
+          throw new Error("No questions available for this selection.");
+
+        questions = apiRes.data;
+        document.getElementById("setupScreen").style.display = "none";
+        document.getElementById("loadingMessage").style.display = "none";
+        document.getElementById("questionScreen").style.display = "block";
+
+        showQuestion();
+        startTimer();
+      } catch (err) {
+        document.getElementById("loadingMessage").style.display = "none";
+        document.getElementById("errorMessage").textContent = err.message;
+        document.getElementById("errorMessage").style.display = "block";
+      }
+    }
+
+
+    function showQuestion() {
+      const q = questions[currentIndex];
+      document.getElementById("questionNumber").textContent = currentIndex + 1;
+      document.getElementById("questionText").textContent = q.questionText || "No question text available.";
+      document.getElementById("answerInput").value = "";
+      currentQuestion = q;
+    }
+
+    async function nextQuestion() {
+      // Submit current answer if possible
+      try { await submitCurrentAnswer(); } catch (e) { /* ignore */ }
+
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        showQuestion();
+      } else {
+        clearInterval(timerInterval);
+        // Complete session if created
+        if (token && currentSession) {
+          try {
+            await fetch(`/api/interview/complete/${currentSession.sessionId}`, {
+              method: 'POST',
+              headers: { 'Authorization': 'Bearer ' + token }
+            });
+          } catch (e) { /* ignore */ }
+        }
+        showReviewScreen();
+      }
+    }
+
+    async function submitCurrentAnswer() {
+      const transcription = document.getElementById("answerInput").value.trim();
+      const duration = secondsElapsed;
+      if (!transcription) return; // nothing to submit
+      if (!(token && currentSession && currentQuestion)) return; // not logged in or no session
+
+      try {
+        const formData = new URLSearchParams();
+        formData.append('sessionId', currentSession.sessionId);
+        formData.append('questionId', currentQuestion.questionId);
+        formData.append('transcription', transcription);
+        formData.append('duration', String(duration || 60));
+
+        const res = await fetch('/api/interview/submit-answer', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData
+        });
+        const json = await res.json();
+        if (json.success) {
+          lastFeedback = json.data;
+        }
+      } catch (e) {
+        // silently ignore submission errors to avoid blocking UX
+      }
+    }
+
+    function startTimer() {
+      secondsElapsed = 0;
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+        const secs = String(secondsElapsed % 60).padStart(2, '0');
+        document.getElementById("timer").textContent = `⏱️ ${mins}:${secs}`;
+      }, 1000);
+    }
+
+    function showReviewScreen() {
+      document.getElementById("questionScreen").style.display = "none";
+      document.getElementById("reviewScreen").style.display = "block";
+
+      // Prefer backend analysis score when available; fallback to simulated
+      const score = lastFeedback && typeof lastFeedback.overallScore === 'number'
+        ? Math.round(lastFeedback.overallScore * 10) // convert 0-10 to percentage
+        : Math.floor(70 + Math.random() * 30);
+      const totalMins = Math.floor(secondsElapsed / 60);
+      const feedbacks = [
+        "Excellent focus and clarity!",
+        "Good improvement area: pacing.",
+        "Solid answers — keep refining keywords.",
+        "Nice energy and structure in responses!"
+      ];
+
+      document.getElementById("scoreBadge").textContent = score + "%";
+      document.getElementById("reviewMessage").textContent = lastFeedback?.tips?.[0] || feedbacks[Math.floor(Math.random() * feedbacks.length)];
+      document.getElementById("strengthMsg").textContent = "Good command over " + (questions[0]?.category || "Mixed") + " questions.";
+      document.getElementById("weaknessMsg").textContent = lastFeedback?.weaknesses?.[0] || ("Try to improve timing (Total time: " + totalMins + " mins).");
+    }
+
+    function retryPractice() {
+      document.getElementById("reviewScreen").style.display = "none";
+      document.getElementById("setupScreen").style.display = "block";
+    }
+  </script>
+</body>
+</html>

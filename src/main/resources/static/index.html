@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Practice Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: "Poppins", sans-serif;
+      box-sizing: border-box;
+    }
+
+    /* 🎥 Background Video */
+    .background-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    /* 🌈 Gradient overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top left, rgba(10, 10, 50, 0.7), rgba(0, 0, 0, 0.9));
+      z-index: -1;
+    }
+
+    body {
+      min-height: 100vh;
+      color: white;
+      overflow-x: hidden;
+      background-color: #0b0d20;
+    }
+
+    /* Navbar */
+    .navbar {
+      backdrop-filter: blur(12px);
+      background: rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+    }
+
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.4rem;
+      color: #7dd3fc !important;
+      text-shadow: 0 0 10px rgba(125, 211, 252, 0.6);
+    }
+
+    .btn-light, .btn-outline-light {
+      border-radius: 50px;
+      font-weight: 500;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 160px 20px 100px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-weight: 700;
+      font-size: 3.2rem;
+      background: linear-gradient(90deg, #8be9fd, #b388ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(139, 233, 253, 0.4);
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: #dcdcdc;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-gradient {
+      background: linear-gradient(90deg, #ff9966, #ff5e62);
+      border: none;
+      color: white;
+      padding: 12px 35px;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(255, 94, 98, 0.5);
+      position: relative;
+      z-index: 2;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 0 35px rgba(255, 94, 98, 0.8);
+    }
+
+    /* Feature Cards */
+    .card-feature {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 35px 25px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      backdrop-filter: blur(15px);
+      transition: all 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .card-feature:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 40px rgba(139, 233, 253, 0.4);
+    }
+
+    .card-feature h3 {
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #8be9fd;
+      text-shadow: 0 0 15px rgba(139, 233, 253, 0.5);
+    }
+
+    .card-feature p {
+      opacity: 0.9;
+      color: #e0e0e0;
+    }
+
+    /* Wave Decoration */
+    .wave {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      background: url('https://cdn.jsdelivr.net/gh/ksy90101/wave-svg@main/wave1.svg') repeat-x;
+      background-size: cover;
+      opacity: 0.2;
+      animation: waveMove 15s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes waveMove {
+      from { background-position-x: 0; }
+      to { background-position-x: 1000px; }
+    }
+
+    footer {
+      text-align: center;
+      color: rgba(255,255,255,0.8);
+      padding: 30px 0;
+      font-size: 0.95rem;
+    }
+
+    /* 📱 Mobile Optimization */
+    @media (max-width: 768px) {
+      .background-video { display: none; }
+      .overlay { background: linear-gradient(135deg, #1a1a3d, #2e185d); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🎥 Background Video -->
+  <video autoplay muted loop playsinline class="background-video">
+    <source src="background.mp4" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">🎯 Interview Practice</a>
+      <div class="ms-auto">
+        <a href="login.html" class="btn btn-outline-light me-2 px-4 rounded-pill">Login</a>
+        <a href="register.html" class="btn btn-light px-4 rounded-pill">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="container">
+      <h1 class="display-5 fw-bold mb-4">Ace Your Next Interview</h1>
+      <p class="lead mb-5">Practice with AI-powered feedback and grow your confidence step by step 🚀</p>
+      <a href="register.html" class="btn-gradient btn-lg">Get Started </a>
+    </div>
+    <div class="wave"></div>
+  </div>
+
+  <!-- Feature Section -->
+  <div class="container pb-5 mt-5">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card-feature">
+          <h3>🎤 Video Practice</h3>
+          <p>Record your answers and receive instant AI-powered feedback on tone and clarity.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card-feature">
+          <h3>🤖 Smart Analysis</h3>
+          <p>AI detects filler words, measures pace, and suggests improvements for natural speech.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card-feature">
+          <h3>📈 Track Progress</h3>
+          <p>Visualize your performance and track your growth with insightful analytics.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 Interview Practice Platform — Built to help you shine ✨
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
